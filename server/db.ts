@@ -193,7 +193,12 @@ async function initializeDb() {
     const { drizzle: drizzlePostgres } = await import('drizzle-orm/node-postgres');
 
     console.log('[DB] Using PostgreSQL database');
-    pool = new Pool({ connectionString: dbUrl });
+    // Add SSL support for production databases (Render, etc.)
+    const poolConfig: any = { connectionString: dbUrl };
+    if (process.env.NODE_ENV === 'production') {
+      poolConfig.ssl = { rejectUnauthorized: false };
+    }
+    pool = new Pool(poolConfig);
     db = drizzlePostgres(pool, { schema });
   } else {
     // Fallback to in-memory SQLite if no valid URL
