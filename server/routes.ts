@@ -92,7 +92,8 @@ export async function registerRoutes(
       res.json({ 
         user: userWithoutPassword, 
         requiresVerification: true,
-        message: 'Please verify your email to continue.' 
+        message: 'Please verify your email to continue.',
+        verificationCode: process.env.NODE_ENV === 'development' ? verificationCode : undefined
       });
     } catch (error) {
       console.error('Register error:', error);
@@ -177,7 +178,10 @@ export async function registerRoutes(
         console.log(`[Auth] New verification code for ${email}: ${verificationCode}`);
       }
 
-      res.json({ message: 'Verification code sent successfully' });
+      res.json({ 
+        message: 'Verification code sent successfully',
+        verificationCode: process.env.NODE_ENV === 'development' ? verificationCode : undefined
+      });
     } catch (error) {
       console.error('Resend verification error:', error);
       res.status(500).json({ message: 'Failed to resend verification code' });
